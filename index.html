@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>+Bienestar Morelos — CETIS 43</title>
+  
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f4ff; color: #333; }
+
+    /* HEADER */
+    header { background: #0056b3; color: white; padding: 1rem 2rem; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; gap: 0.8rem; }
+    .logo { font-size: 1.4rem; font-weight: bold; line-height: 1.2; }
+    .logo small { display: block; font-size: 0.78rem; font-weight: normal; opacity: 0.85; }
+
+    /* HERO */
+    .hero { background: linear-gradient(160deg, #0069d9 0%, #004ea0 100%); color: white; padding: 3rem 2rem 2rem; text-align: center; }
+    .hero h1 { font-size: 1.85rem; margin: 0 0 1rem; }
+    .hero p { max-width: 620px; margin: 0 auto 1.5rem; font-size: 1rem; line-height: 1.65; opacity: 0.95; }
+
+    /* BUTTONS */
+    .btn { display: inline-block; padding: 0.72rem 1.4rem; border-radius: 6px; font-weight: bold; font-size: 0.92rem; border: 2px solid transparent; cursor: pointer; text-decoration: none; transition: 0.15s; }
+    .btn-white { background: white; color: #0056b3; }
+    .btn-white:hover { background: #e0e9ff; }
+    .btn-blue { background: #0056b3; color: white; border-color: #0056b3; }
+    .btn-blue:hover { background: #004494; }
+    .btn-soft { background: transparent; color: #0056b3; border-color: #0056b3; }
+    .btn-soft:hover { background: #e8f0fe; }
+
+    /* CONFIDENCIALIDAD */
+    .conf-btn { background: #f0f4ff; color: #0056b3; border: 1px dashed #0056b3; padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.85rem; cursor: pointer; display: block; width: 100%; text-align: left; margin-bottom: 1rem; }
+    .conf-content { display: none; background: #fff; border: 1px solid #dde3f0; padding: 1rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.5; color: #555; margin-bottom: 1.5rem; }
+    .conf-content.active { display: block; }
+
+    /* SURVEY WRAP */
+    #survey-wrap { background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,60,0.1); overflow: hidden; }
+    .sv-header { background: linear-gradient(90deg, #0056b3, #0069d9); color: white; padding: 1.2rem 1.8rem; }
+    .sv-header h2 { margin: 0 0 0.2rem; font-size: 1.15rem; }
+    .sv-header p  { margin: 0; font-size: 0.82rem; opacity: 0.85; }
+
+    .sv-progress-track { height: 6px; background: #dde3f0; }
+    .sv-progress-fill  { height: 6px; background: #00c48c; transition: width 0.4s ease; }
+
+    .sv-tabs { display: flex; background: #f8faff; border-bottom: 1px solid #dde3f0; }
+    .sv-tab  { flex: 1; text-align: center; padding: 0.72rem 0.5rem; font-size: 0.82rem; color: #888; border-bottom: 3px solid transparent; }
+    .sv-tab.active { color: #0056b3; border-bottom-color: #0056b3; font-weight: 700; }
+
+    .sv-panel { display: none; padding: 1.8rem; }
+    .sv-panel.active { display: block; }
+
+    /* Questions */
+    .q-item { border-bottom: 1px solid #f0f2f8; padding: 0.9rem 0; }
+    .q-text { font-size: 0.92rem; margin-bottom: 0.6rem; }
+    .q-options { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .q-opt input[type=radio] { display: none; }
+    .q-opt-btn { background: #f0f4ff; border: 2px solid #dde3f0; border-radius: 7px; padding: 0.45rem 0.55rem; font-size: 0.74rem; text-align: center; cursor: pointer; transition: 0.12s; }
+    .q-opt input[type=radio]:checked + .q-opt-btn { background: #0056b3; border-color: #0056b3; color: white; font-weight: 600; }
+    
+    .field { display: block; margin-bottom: 0.8rem; font-size: 0.9rem; }
+    .field input, .field select, .field textarea { display: block; width: 100%; padding: 0.5rem 0.7rem; margin-top: 0.3rem; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; }
+    .student-data-box { background:#f9fbff; padding:1.2rem; border-radius:8px; border:1px solid #dde3f0; margin-bottom: 1.5rem; }
+
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+    .r-card { border-radius: 10px; padding: 1.2rem; text-align: center; border: 2px solid #eee; }
+    .r-card.low { background: #e8f8f0; border-color: #00b894; }
+    .r-card.medium { background: #fff9e6; border-color: #f39c12; }
+    .r-card.high { background: #fdecea; border-color: #e74c3c; }
+
+    .card { background: white; border-radius: 10px; padding: 1.3rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .contact-btn { background: #0056b3; color: white; padding: 0.35rem 0.8rem; border-radius: 4px; font-size: 0.85rem; text-decoration: none; display: inline-block; margin-top: 0.5rem; }
+
+    main { max-width: 880px; margin: 0 auto; padding: 2rem 1.2rem; }
+    footer { background: #1a1a2e; color: #bbb; padding: 1.5rem; text-align: center; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      +Bienestar Morelos
+      <small>CETIS 43 · Xochitepec, Morelos</small>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="inicio" class="hero" style="border-radius: 10px; margin-bottom: 2rem;">
+    <h1>Encuesta de Bienestar Estudiantil</h1>
+    <p>Conoce tu nivel de ansiedad, estrés y cómo te sientes en el entorno escolar. Tus resultados te guiarán hacia recursos de apoyo.</p>
+    <a href="#survey-wrap" class="btn btn-white" style="margin-top: 1rem;">Comenzar</a>
+  </section>
+
+  <section id="encuesta-sec">
+    
+    <button class="conf-btn" onclick="toggleConf()">🔒 Ver Leyenda de confidencialidad de datos</button>
+    <div id="conf-data" class="conf-content">
+      <strong>Leyenda de confidencialidad de datos</strong><br><br>
+      <ul>
+        <li>Los datos recopilados a través de esta encuesta tienen un fin exclusivamente educativo y de apoyo emocional, y no tienen ningún propósito comercial ni publicitario.</li>
+        <li>La información proporcionada por los estudiantes adolescentes se maneja de forma confidencial, sin que se vincule con datos personales que permitan identificarlos externamente.</li>
+        <li>Estos datos se utilizan únicamente como base para orientar al estudiante sobre su nivel de ansiedad, estrés o bullying, y para canalizarlo, de ser necesario, a servicios de ayuda profesional en Morelos.</li>
+        <li>En ningún caso se compartirán con terceros ni se emplearán para fines distintos a los señalados en este aviso.</li>
+      </ul>
+    </div>
+
+    <div id="survey-wrap">
+      <div class="sv-header">
+        <h2>+Bienestar Morelos — CETIS 43</h2>
+        <p>Promotor: Biólogo Enrique Torres Álvarez.2026</p>
+      </div>
+
+      <div class="sv-progress-track">
+        <div class="sv-progress-fill" id="svProgress" style="width:33%"></div>
+      </div>
+
+      <div class="sv-tabs">
+        <div class="sv-tab active" id="svTab1">1. Encuesta</div>
+        <div class="sv-tab" id="svTab2">2. Resultados</div>
+        <div class="sv-tab" id="svTab3">3. Recursos</div>
+      </div>
+
+      <div class="sv-panel active" id="svPanel1">
+        <form id="svForm" novalidate>
+          <div class="student-data-box">
+            <h4 style="margin-top:0; color:#0056b3; margin-bottom: 0.8rem;">Datos del Estudiante</h4>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+              <label class="field" style="flex:2; min-width:200px;">Nombre: 
+                <input type="text" id="alumnoNombre" required placeholder="Nombre" />
+              </label>
+              <label class="field" style="flex:1; min-width:100px;">Semestre:
+                <select id="alumnoSemestre" required>
+                  <option value="">Selecciona...</option>
+                  <option value="1ro">1ro</option><option value="2do">2do</option>
+                  <option value="3ro">3ro</option><option value="4to">4to</option>
+                  <option value="5to">5to</option><option value="6to">6to</option>
+                </select>
+              </label>
+              <label class="field" style="flex:1; min-width:80px;">Grupo: 
+                <input type="text" id="alumnoGrupo" required placeholder="Ej. A" />
+              </label>
+            </div>
+          </div>
+          
+          <div id="qAnsiedad"></div>
+          <div id="qEstres"></div>
+          <div id="qBullying"></div>
+        </form>
+        <button class="btn btn-blue" onclick="goToResults()" style="width:100%; margin-top:1rem; font-size: 1.1rem; padding: 1rem;">Ver mis resultados →</button>
+      </div>
+
+      <div class="sv-panel" id="svPanel2">
+        <div class="results-grid" id="resultsGrid"></div>
+        <div style="text-align: center; margin-top: 1.5rem; color: #666; font-size: 0.9rem;">
+          * Puntuación máxima por rubro: 15 puntos.
+        </div>
+        <button class="btn btn-blue" onclick="navTo(3)" style="width:100%; margin-top: 1rem;">Ver recursos de apoyo →</button>
+      </div>
+
+      <div class="sv-panel" id="svPanel3">
+        <h3>Directorio de Ayuda en Morelos</h3>
+        
+        <div class="card">
+          <h3>🏥 CAISA Móvil</h3>
+          <p>Atención integral y gratuita para adolescentes en Morelos.</p>
+          <a href="https://www.morelos.gob.mx/ultimas-noticias/ofrece-caisa-movil-atencion-integral-y-gratuita-a-jovenes-y-adolescentes-en-morelos" class="contact-btn" target="_blank">Ver Sitio Oficial CAISA</a>
+        </div>
+
+        <div class="card">
+          <h3>🎓 Clínica CITPsi — UAEM</h3>
+          <p>Clínica de Servicios Psicológicos de la Universidad Autónoma del Estado de Morelos.</p>
+          <a href="https://www.uaem.mx/organizacion-institucional/unidades-academicas/centros-de-investigacion/citpsi/clinica-de-servicios-psicologicos" class="contact-btn" target="_blank">Visitar Clínica UAEM</a>
+        </div>
+
+        <div class="card">
+          <h3>👨‍👩‍👧 DIF Morelos</h3>
+          <p>Atención psicológica y orientación familiar gratuita.</p>
+          <a href="https://dif.morelos.gob.mx" class="contact-btn" target="_blank">Sitio Web DIF Morelos</a>
+        </div>
+
+        <button class="btn btn-soft" onclick="resetSurvey()" style="width:100%; margin-top: 1rem;">Contestar Nueva Encuesta</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <h2>Sugerencias y Contacto</h2>
+    <div class="card">
+      <p>Tus comentarios nos ayudan a mejorar esta herramienta para la comunidad de CETIS 43.</p>
+      <form action="https://formspree.io/f/xlgzoqby" method="POST">
+        <label class="field">Nombre: <input type="text" name="name" /></label>
+        <label class="field">Correo: <input type="email" name="email" required /></label>
+        <label class="field">Sugerencia: <textarea name="message" rows="4" required></textarea></label>
+        <button type="submit" class="btn btn-blue">Enviar sugerencia</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>CETIS 43 · Xochitepec, Morelos · 2026<br>
+  Biólogo Enrique Torres Álvarez</p>
+</footer>
+
+<script>
+// 1. Forzar limpieza de caché
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    keys.forEach(key => caches.delete(key));
+  });
+}
+
+// NUEVA URL PROPORCIONADA
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEROYdRqKC2y8O7CG9pr242rNO85Mlbvju-MURf3AzHR0XluBkSG3AIAPaYPCJq9Y/exec';
+
+// 2. Módulos Estandarizados (5 preguntas c/u, 4 opciones = Máx 15 pts)
+const DIMS = [
+  { 
+    id: 'ansiedad', containerId: 'qAnsiedad', title: 'Ansiedad', icon: '😰', 
+    scale: ['Nunca (0)', 'A veces (1)', 'Frecuente (2)', 'Diario (3)'], 
+    questions: [
+      '1. ¿Te has sentido nervioso/a, ansioso/a o al límite?', 
+      '2. ¿No has podido dejar de preocuparte o controlar tu preocupación?', 
+      '3. ¿Has tenido dificultad para relajarte?',
+      '4. ¿Te has sentido fácilmente molesto/a o irritable?',
+      '5. ¿Has sentido miedo como si algo terrible fuera a pasar?'
+    ], 
+    t1: 5, t2: 10
+  },
+  { 
+    id: 'estres', containerId: 'qEstres', title: 'Estrés', icon: '😤', 
+    scale: ['Nunca (0)', 'A veces (1)', 'Seguido (2)', 'Muy seguido (3)'], 
+    questions: [
+      '1. ¿Te has sentido molesto/a por algo que ocurrió inesperadamente?', 
+      '2. ¿Te has sentido incapaz de controlar las cosas importantes en tu vida?',
+      '3. ¿Te has sentido muy nervioso/a y estresado/a?',
+      '4. ¿Has sentido que no podías hacerle frente a todas tus responsabilidades?',
+      '5. ¿Has sentido que las dificultades se acumulan y no puedes superarlas?'
+    ], 
+    t1: 5, t2: 10 
+  },
+  { 
+    id: 'bullying', containerId: 'qBullying', title: 'Bullying', icon: '🛡️', 
+    scale: ['Nunca (0)', 'Pocas veces (1)', 'Algunas veces (2)', 'Muchas veces (3)'], 
+    questions: [
+      '1. ¿Te han insultado, burlado de ti o puesto apodos hirientes?', 
+      '2. ¿Te han excluido o ignorado a propósito de actividades o grupos?',
+      '3. ¿Te han golpeado, empujado o agredido físicamente?',
+      '4. ¿Han publicado fotos o información tuya sin permiso para molestarte?',
+      '5. ¿Te han enviado mensajes hirientes o amenazas por redes sociales?'
+    ], 
+    t1: 4, t2: 8
+  }
+];
+
+function toggleConf() { document.getElementById('conf-data').classList.toggle('active'); }
+
+function renderAll() {
+  DIMS.forEach(dim => {
+    const container = document.getElementById(dim.containerId);
+    container.innerHTML = `<h4 style="color:#0056b3; margin-top:2rem; border-bottom:1px solid #ccc; padding-bottom:0.5rem;">${dim.icon} ${dim.title}</h4>`;
+    dim.questions.forEach((q, i) => {
+      const item = document.createElement('div');
+      item.className = 'q-item';
+      item.innerHTML = `<div class="q-text">${q}</div><div class="q-options"></div>`;
+      const optsCont = item.querySelector('.q-options');
+      dim.scale.forEach((lbl, val) => {
+        optsCont.innerHTML += `<label class="q-opt"><input type="radio" name="${dim.id}_${i}" value="${val}"><div class="q-opt-btn">${lbl}</div></label>`;
+      });
+      container.appendChild(item);
+    });
+  });
+}
+
+let currentScores = {};
+
+function goToResults() {
+  const nombre = document.getElementById('alumnoNombre').value.trim();
+  const semestre = document.getElementById('alumnoSemestre').value;
+  const grupo = document.getElementById('alumnoGrupo').value.trim();
+
+  if (!nombre || !semestre || !grupo) {
+    alert("Por favor, completa Nombre, Semestre y Grupo antes de continuar.");
+    return;
+  }
+
+  // Verificar que todas las preguntas estén contestadas
+  let totalContestadas = 0;
+  DIMS.forEach(dim => {
+    let s = 0;
+    dim.questions.forEach((_, i) => {
+      const el = document.querySelector(`input[name="${dim.id}_${i}"]:checked`);
+      if(el) {
+        s += parseInt(el.value);
+        totalContestadas++;
+      }
+    });
+    currentScores[dim.id] = s;
+  });
+
+  if (totalContestadas < 15) {
+    alert("Faltan preguntas por contestar. Por favor revisa la encuesta.");
+    return;
+  }
+
+  // Generar gráficas/tarjetas
+  const grid = document.getElementById('resultsGrid');
+  grid.innerHTML = '';
+  DIMS.forEach(dim => {
+    const s = currentScores[dim.id];
+    const key = s >= dim.t2 ? 'high' : (s >= dim.t1 ? 'medium' : 'low');
+    
+    let mensaje = "";
+    if (key === 'low') mensaje = "Nivel bajo / Controlable";
+    if (key === 'medium') mensaje = "Nivel moderado / Prestar atención";
+    if (key === 'high') mensaje = "Nivel alto / Buscar apoyo";
+
+    grid.innerHTML += `<div class="r-card ${key}"><h4>${dim.title}</h4><strong style="font-size:1.5rem;">${s} pts</strong><p style="margin: 0.5rem 0 0; font-size:0.85rem;">${mensaje}</p></div>`;
+  });
+
+  navTo(2);
+
+  // INTEGRACIÓN PASO 2: FORMDATA NATIVO (Adiós bloqueos CORS de JSON)
+  const formData = new FormData();
+  formData.append("fecha", new Date().toLocaleString('es-MX'));
+  formData.append("nombre", nombre);
+  formData.append("semestre", semestre);
+  formData.append("grupo", grupo);
+  formData.append("ansiedad", currentScores.ansiedad);
+  formData.append("estres", currentScores.estres);
+  formData.append("bullying", currentScores.bullying);
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: formData
+  }).then(() => {
+    console.log("Enviado con éxito");
+  }).catch(error => {
+    console.error("Error al enviar los datos:", error);
+  });
+}
+
+function navTo(t) {
+  document.querySelectorAll('.sv-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sv-tab').forEach(p => p.classList.remove('active'));
+  
+  document.getElementById(`svPanel${t}`).classList.add('active');
+  document.getElementById(`svTab${t}`).classList.add('active');
+  document.getElementById('svProgress').style.width = (t/3*100)+'%';
+  document.getElementById('survey-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetSurvey() { 
+  document.getElementById('svForm').reset(); 
+  navTo(1); 
+}
+
+// Iniciar aplicación
+renderAll();
+</script>
+</body>
+</html>
